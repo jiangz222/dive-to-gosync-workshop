@@ -25,6 +25,8 @@ func main() {
 
 			ready <- struct{}{} // 运动员i准备就绪
 			for !isReady {
+				// 1 Wait()会 unlock掉m.Lock
+				// 2 所有的Wait()都会收到c.Broadcast
 				c.Wait()
 			}
 			log.Printf("%d started\n", i)
@@ -33,7 +35,7 @@ func main() {
 	}
 
 	// false broadcast
-	c.Broadcast()
+	c.Broadcast() // 此时goroutine里可能还没有开始Wait()
 
 	// 裁判员检查所有的运动员是否就绪
 	for i := 0; i < 10; i++ {
