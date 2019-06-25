@@ -19,14 +19,14 @@ func main() {
 		<-ctx1.Done()
 		fmt.Println("g1 done, err:", ctx1.Err())
 	}()
-
+	// ctx2 是对ctx1的封装，继承了ctx1的方法，ctx2.Done()即ctx1.Done()，会被c1()的close(Done)关闭
 	ctx2 := context.WithValue(ctx1, "aaa", 1)
 	go func() {
 		fmt.Println("g2 start")
 		<-ctx2.Done()
 		fmt.Println("g2 done, err:", ctx1.Err())
 	}()
-
+	// propagateCancel会不停网上找到ctx1 这个cancelContext并成为它的child，所以c1()会触发ctx3.Done()
 	ctx3, c3 := context.WithCancel(ctx2)
 	go func() {
 		fmt.Println("g3 start")
@@ -37,6 +37,7 @@ func main() {
 	time.Sleep(1e9)
 	c1()
 	time.Sleep(5 * time.Second)
+	fmt.Println("call c3 cancel")
 	c3()
 
 }
