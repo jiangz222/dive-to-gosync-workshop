@@ -10,7 +10,7 @@ type Mutex struct {
 
 func NewMutex() *Mutex {
 	mu := &Mutex{make(chan struct{}, 1)}
-	mu.ch <- struct{}{}
+	mu.ch <- struct{}{} // 先往ch发送，保证下一个lock的可以不阻塞
 	return mu
 }
 func (m *Mutex) Lock() {
@@ -18,6 +18,8 @@ func (m *Mutex) Lock() {
 }
 func (m *Mutex) Unlock() {
 	select {
+	// 先往ch发送，保证下一个lock的可以不阻塞
+	// 如果没有lock，则这里会导致ch overflow，触发panic
 	case m.ch <- struct{}{}:
 	default:
 		panic("unlock of unlocked mutex")
@@ -35,4 +37,7 @@ func (m *Mutex) TryLock(timeout time.Duration) bool {
 }
 func (m *Mutex) IsLocked() bool {
 	return len(m.ch) == 0
+}
+func (m *Mutex) Len() int {
+	return len(m.ch)
 }

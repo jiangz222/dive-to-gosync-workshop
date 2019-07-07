@@ -12,6 +12,7 @@ func main() {
 	time.Sleep(1e9)
 }
 
+// 并发竞争锁
 func lock() {
 	mu.Lock()
 	defer mu.Lock()

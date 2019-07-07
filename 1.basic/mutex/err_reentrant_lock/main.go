@@ -18,7 +18,7 @@ func M2(l sync.Locker) {
 }
 
 func M3(l sync.Locker) {
-	l.Lock()
+	l.Lock() // 死锁
 	fmt.Println("in M3")
 	l.Unlock()
 }
