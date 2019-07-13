@@ -19,7 +19,7 @@ func (m *Mutex) Lock() {
 func (m *Mutex) Unlock() {
 	select {
 	// 先往ch发送，保证下一个lock的可以不阻塞
-	// 如果没有lock，则这里会导致ch overflow，触发panic
+	// 如果没有lock，则说明ch里已经有一个消息，不能再往ch里面塞消息，即写不成功，所以这里会走到default
 	case m.ch <- struct{}{}:
 	default:
 		panic("unlock of unlocked mutex")

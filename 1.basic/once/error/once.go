@@ -10,7 +10,9 @@ type Once struct {
 	done uint32
 }
 
+// 并发的 对某一个特定的 f func() 调用Do时，利用原子操作和mutex，保证 只调用一次callback
 func (o *Once) Do(f func() error) error {
+	// 这里不是必须吧？
 	if atomic.LoadUint32(&o.done) == 1 {
 		return nil
 	}
