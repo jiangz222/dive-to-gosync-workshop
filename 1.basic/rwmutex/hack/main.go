@@ -28,6 +28,7 @@ type m struct {
 }
 
 func (rw *RWMutex) ReaderCount() int {
+	// [jz] 可以这样访问到结构小写的成员...
 	v := (*m)(unsafe.Pointer(&rw.RWMutex))
 	c := int(v.readerCount)
 	if c < 0 {
@@ -50,6 +51,7 @@ func main() {
 	for i := 0; i < 100; i++ {
 		go func() {
 			mu.RLock()
+			fmt.Println("rlock")
 			time.Sleep(time.Hour)
 			mu.RUnlock()
 		}()
@@ -58,11 +60,14 @@ func main() {
 	for i := 0; i < 50; i++ {
 		go func() {
 			mu.Lock()
+			fmt.Println("write lock")
 			time.Sleep(time.Hour)
 			mu.Unlock()
 		}()
 	}
 
 	fmt.Println("readers: ", mu.ReaderCount())
+	// write lock required，so the count is increased
 	fmt.Println("writer: ", mu.WriterCount())
+	time.Sleep(10 * time.Second)
 }

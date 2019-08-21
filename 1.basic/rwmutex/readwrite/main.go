@@ -29,6 +29,7 @@ func main() {
 	go func() {
 		defer wg.Done()
 
+		// 被前面的读锁lock，前面的rlock释放后才能拿到锁
 		mu.Lock()
 		fmt.Println("writer1 Lock")
 		time.Sleep(10 * time.Second)
