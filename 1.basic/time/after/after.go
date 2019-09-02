@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	// [jz] 证明了一下time.After是从堆申请内存
 	runtime.GC()
 	mem := &runtime.MemStats{}
 	runtime.ReadMemStats(mem)
